@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Happy Birthday!</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: white;
+            position: relative;
+        }
+
+        .container {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .message-box {
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333;
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation: fadeIn 0.5s ease-out forwards;
+            z-index: 100;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            to { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+        }
+        
+        .cta-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+            width: 100%;
+        }
+
+        .cta-container input {
+            padding: 0.75rem 1.25rem;
+            border-radius: 999px;
+            border: 1px solid #ccc;
+            width: 100%;
+            max-width: 300px;
+            outline: none;
+            transition: all 0.2s;
+        }
+        
+        .cta-container input:focus {
+            border-color: #f5576c;
+            box-shadow: 0 0 0 3px rgba(245, 87, 108, 0.3);
+        }
+
+        .cta-button {
+            background-color: #f5576c;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 999px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: transform 0.2s, background-color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        .cta-button:hover {
+            background-color: #e4425b;
+            transform: scale(1.05);
+        }
+
+        .close-btn {
+            background-color: #f5576c;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            cursor: pointer;
+            margin-top: 1rem;
+            font-weight: bold;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .close-btn:hover {
+            background-color: #e4425b;
+            transform: scale(1.05);
+        }
+
+        .balloon {
+            position: absolute;
+            background-color: #ffcc00;
+            border-radius: 50%;
+            width: 80px;
+            height: 100px;
+            cursor: pointer;
+            transition: transform 0.5s ease-out;
+            animation: float 10s ease-in-out infinite, sway 5s ease-in-out infinite;
+            z-index: 5;
+            box-shadow: inset -5px -5px 10px rgba(0, 0, 0, 0.2);
+            top: 120vh; /* Start below the viewport */
+        }
+
+        .balloon-string {
+            position: absolute;
+            height: 50px;
+            width: 2px;
+            background-color: #fff;
+            left: 50%;
+            transform: translateX(-50%);
+            top: 100px;
+            opacity: 0.7;
+        }
+        
+        @keyframes float {
+            0% { transform: translateY(0) rotate(0deg); }
+            100% { transform: translateY(-150vh) rotate(360deg); }
+        }
+
+        @keyframes sway {
+            0% { transform: translateX(0); }
+            50% { transform: translateX(20px); }
+            100% { transform: translateX(0); }
+        }
+        
+        .popped-balloon {
+            opacity: 0;
+            transform: scale(2) !important;
+        }
+
+        .confetti-piece {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: transparent;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 20;
+            transition: transform 0.5s ease-out, opacity 0.5s ease-out;
+            cursor: pointer;
+        }
+
+        .confetti-piece.active {
+            pointer-events: auto;
+        }
+
+        .confetti-piece.popped {
+            transform: scale(2) !important;
+            opacity: 0;
+        }
+
+        .ribbon {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+            pointer-events: none;
+        }
+        
+        h1 {
+            font-size: 4rem;
+            font-weight: bold;
+            text-shadow: 4px 4px 8px rgba(0,0,0,0.3);
+            margin-bottom: 1rem;
+        }
+
+        p {
+            font-size: 1.5rem;
+            max-width: 600px;
+            margin: 0 auto;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #f5576c;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 2.5rem; }
+            p { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-4xl sm:text-6xl font-extrabold text-white animate-bounce">Happy Birthday!</h1>
+        <p class="text-lg sm:text-xl mt-4 max-w-2xl mx-auto">
+            Welcome to your special day! Look at all the balloons and confetti. Click them to make them pop!
+        </p>
+    </div>
+
+    <!-- Message Box -->
+    <div id="message-box" class="message-box fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <h2 class="text-2xl font-bold mb-4">A Special Message Just for You!</h2>
+        <div class="cta-container">
+            <input type="text" id="name-input" placeholder="Enter name and/or keywords..." />
+            <button id="generate-btn" class="cta-button">
+                Generate a Birthday Wish ✨
+            </button>
+            <div id="loading-indicator" class="hidden">
+                <div class="loader"></div>
+            </div>
+        </div>
+        <p id="birthday-message" class="text-lg text-center mt-4">
+            You've brought so much joy into the world. May your birthday be filled with as much happiness as you've given to others. Wishing you an amazing year ahead!
+        </p>
+        <button id="close-btn" class="close-btn mt-4">Close</button>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const container = document.querySelector('.container');
+            const messageBox = document.getElementById('message-box');
+            const closeBtn = document.getElementById('close-btn');
+            const confettiColors = ['#e91e63', '#9c27b0', '#2196f3', '#009688', '#ffeb3b', '#ff9800'];
+            let poppedConfettiCount = 0;
+            const confettiRequired = 10;
+            const generateBtn = document.getElementById('generate-btn');
+            const nameInput = document.getElementById('name-input');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const birthdayMessageEl = document.getElementById('birthday-message');
+            
+            // API setup
+            const apiKey = "";
+            const apiUrl = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=" + apiKey;
+
+            function getRandom(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            // Create Balloons
+            function createBalloon() {
+                const balloon = document.createElement('div');
+                balloon.classList.add('balloon');
+                const color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                balloon.style.backgroundColor = color;
+                balloon.style.left = `${getRandom(5, 95)}vw`;
+                balloon.style.animationDuration = `${getRandom(8, 15)}s`;
+                balloon.style.animationDelay = `${getRandom(0, 5)}s`;
+                document.body.appendChild(balloon);
+
+                // Add string
+                const string = document.createElement('div');
+                string.classList.add('balloon-string');
+                string.style.backgroundColor = color;
+                balloon.appendChild(string);
+
+                balloon.addEventListener('click', () => {
+                    balloon.classList.add('popped-balloon');
+                    createConfetti(balloon.getBoundingClientRect());
+                    setTimeout(() => {
+                        balloon.remove();
+                    }, 500);
+                });
+            }
+
+            for (let i = 0; i < 15; i++) {
+                createBalloon();
+            }
+
+            // Create Confetti
+            function createConfetti(rect) {
+                for (let i = 0; i < 20; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.classList.add('confetti-piece');
+                    confetti.style.backgroundColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                    confetti.style.left = `${rect.left + rect.width / 2}px`;
+                    confetti.style.top = `${rect.top + rect.height / 2}px`;
+                    confetti.style.transform = `translate(${getRandom(-100, 100)}px, ${getRandom(-100, 100)}px) rotate(${getRandom(0, 360)}deg)`;
+                    document.body.appendChild(confetti);
+
+                    // Add click handler to confetti
+                    setTimeout(() => {
+                        confetti.classList.add('active');
+                    }, 50); // Small delay to allow for positioning
+                    
+                    confetti.addEventListener('click', () => {
+                        if (confetti.classList.contains('active') && !confetti.classList.contains('popped')) {
+                            confetti.classList.add('popped');
+                            poppedConfettiCount++;
+                            if (poppedConfettiCount >= confettiRequired) {
+                                showMessageBox();
+                            }
+                            setTimeout(() => {
+                                confetti.remove();
+                            }, 500);
+                        }
+                    });
+                }
+            }
+
+            // Show and hide message box
+            function showMessageBox() {
+                messageBox.style.display = 'flex';
+                // Add a listener to close when clicking outside the box
+                setTimeout(() => {
+                    document.addEventListener('click', closeOnOutsideClick);
+                }, 100);
+            }
+
+            function hideMessageBox() {
+                messageBox.style.display = 'none';
+                document.removeEventListener('click', closeOnOutsideClick);
+            }
+
+            function closeOnOutsideClick(event) {
+                if (!messageBox.contains(event.target) && event.target.id !== 'close-btn' && !event.target.classList.contains('confetti-piece') && !messageBox.contains(event.target)) {
+                    hideMessageBox();
+                }
+            }
+            
+            // Gemini API call for a new message
+            async function generateMessage() {
+                const name = nameInput.value.trim();
+                if (!name) {
+                    birthdayMessageEl.textContent = "Please enter a name or some keywords to generate a message.";
+                    return;
+                }
+
+                loadingIndicator.classList.remove('hidden');
+                generateBtn.disabled = true;
+
+                try {
+                    const userQuery = `Write a short and sweet birthday wish for a person named ${name}. Make it feel personal and positive.`;
+                    
+                    const payload = {
+                        contents: [{ parts: [{ text: userQuery }] }],
+                        tools: [{ "google_search": {} }],
+                        systemInstruction: {
+                            parts: [{ text: "You are a warm, friendly, and creative birthday wish generator. Your task is to write short, positive, and heartfelt birthday wishes based on the user's input." }]
+                        },
+                    };
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    const result = await response.json();
+                    const text = result?.candidates?.[0]?.content?.parts?.[0]?.text || "Failed to generate a message. Please try again.";
+                    birthdayMessageEl.textContent = text;
+                } catch (error) {
+                    console.error("Error generating message:", error);
+                    birthdayMessageEl.textContent = "Oops! Something went wrong. Please try again.";
+                } finally {
+                    loadingIndicator.classList.add('hidden');
+                    generateBtn.disabled = false;
+                }
+            }
+
+            closeBtn.addEventListener('click', hideMessageBox);
+            generateBtn.addEventListener('click', generateMessage);
+        });
+    </script>
+</body>
+</html>
